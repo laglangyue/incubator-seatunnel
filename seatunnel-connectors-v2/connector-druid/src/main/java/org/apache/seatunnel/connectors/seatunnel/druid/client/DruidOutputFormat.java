@@ -69,7 +69,7 @@ public class DruidOutputFormat implements Serializable {
     private static final String DEFAULT_TIMESTAMP_FORMAT = "auto";
     private static final String DEFAULT_COLUMN = "__time";
     private static final DateTime DEFAULT_TIMESTAMP_MISSING_VALUE = new DateTime();
-    private final transient StringBuilder  data;
+    private final transient StringBuilder data;
     private final String coordinatorURL;
     private final String datasource;
     private final String timestampColumn;
@@ -197,6 +197,8 @@ public class DruidOutputFormat implements Serializable {
     }
 
     private ParallelIndexTuningConfig tuningConfig() {
+        // 0.22.1 different from 0.23 24 25
+        ParallelIndexTuningConfig parallelIndexTuningConfig = ParallelIndexTuningConfig.defaultConfig();
         return new ParallelIndexTuningConfig(
             null,
             null,

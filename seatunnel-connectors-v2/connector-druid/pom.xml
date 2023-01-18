@@ -13,6 +13,7 @@
 
     <properties>
         <jackson-datatype-joda.version>2.6.7</jackson-datatype-joda.version>
+        <druid.version>0.22.1</druid.version>
     </properties>
 
     <dependencies>
@@ -26,30 +27,45 @@
             <artifactId>jackson-datatype-joda</artifactId>
             <version>${jackson-datatype-joda.version}</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
+            <version>4.5.14</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
+            <version>2.0.23</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/joda-time/joda-time -->
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
+            <version>2.12.2</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.druid/druid-indexing-service -->
         <dependency>
             <groupId>org.apache.druid</groupId>
             <artifactId>druid-indexing-service</artifactId>
+            <version>${druid.version}</version>
+            <scope>provided</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.druid/druid-core -->
         <dependency>
             <groupId>org.apache.druid</groupId>
             <artifactId>druid-core</artifactId>
+            <version>${druid.version}</version>
+            <scope>provided</scope>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.calcite.avatica/avatica-core -->
         <dependency>
             <groupId>org.apache.calcite.avatica</groupId>
             <artifactId>avatica-core</artifactId>
+            <version>1.22.0</version>
         </dependency>
+
     </dependencies>
 
 </project>
