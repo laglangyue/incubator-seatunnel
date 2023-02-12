@@ -35,10 +35,13 @@ import org.apache.seatunnel.api.table.type.SqlType;
 import org.apache.seatunnel.common.exception.CommonErrorCode;
 import org.apache.seatunnel.format.json.exception.SeaTunnelJsonFormatException;
 
+import lombok.Builder;
+
 import java.io.IOException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@Builder
 public class JsonDeserializationSchema implements DeserializationSchema<SeaTunnelRow> {
     private static final long serialVersionUID = 1L;
 
