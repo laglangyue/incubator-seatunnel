@@ -18,6 +18,7 @@
 package org.apache.seatunnel.api.configuration.util;
 
 import org.apache.seatunnel.shade.com.fasterxml.jackson.core.type.TypeReference;
+import org.apache.seatunnel.shade.com.typesafe.config.Config;
 
 import org.apache.seatunnel.api.configuration.Option;
 
@@ -28,6 +29,8 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
 public class OptionUtil {
 
@@ -102,5 +105,20 @@ public class OptionUtil {
             underScore.append(Character.isLowerCase(c) ? c : "_" + Character.toLowerCase(c));
         }
         return underScore.toString();
+    }
+
+    public static <T> T get(
+            Option<T> option, Map<String, String> optionMap, Function<String, T> transform) {
+        if (optionMap.containsKey(option.key())) {
+            transform.apply(optionMap.get(option.key()));
+        }
+        return option.defaultValue();
+    }
+
+    public static <T> T get(Option<T> option, Config config, Function<String, T> transform) {
+        if (config.hasPath(option.key())) {
+            transform.apply(config.getString(option.key()));
+        }
+        return option.defaultValue();
     }
 }
