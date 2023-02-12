@@ -40,7 +40,6 @@ import java.io.IOException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-@Builder
 public class JsonDeserializationSchema implements DeserializationSchema<SeaTunnelRow> {
     private static final long serialVersionUID = 1L;
 
@@ -61,6 +60,7 @@ public class JsonDeserializationSchema implements DeserializationSchema<SeaTunne
     /** Object mapper for parsing the JSON. */
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    @Builder
     public JsonDeserializationSchema(
             boolean failOnMissingField, boolean ignoreParseErrors, SeaTunnelRowType rowType) {
         if (ignoreParseErrors && failOnMissingField) {
