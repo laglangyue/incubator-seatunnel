@@ -17,7 +17,7 @@ Source connector for Apache Pulsar.
 
 ## Options
 
-|           name           |  type   | required | default value |
+| name                     | type    | required | default value |
 |--------------------------|---------|----------|---------------|
 | topic                    | String  | No       | -             |
 | topic-pattern            | String  | No       | -             |
@@ -37,6 +37,8 @@ Source connector for Apache Pulsar.
 | cursor.stop.timestamp    | Long    | No       | -             |
 | schema                   | config  | No       | -             |
 | common-options           |         | no       | -             |
+| format                   | String  | no       | json          |
+| field_delimiter          | String  | no       | ,             |
 
 ### topic [String]
 
