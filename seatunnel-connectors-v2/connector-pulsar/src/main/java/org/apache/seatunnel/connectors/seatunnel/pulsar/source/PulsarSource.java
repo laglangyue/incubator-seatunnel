@@ -60,6 +60,7 @@ import org.apache.seatunnel.format.json.canal.CanalJsonFormatFactory;
 import org.apache.seatunnel.format.json.exception.SeaTunnelJsonFormatException;
 import org.apache.seatunnel.format.text.TextDeserializationSchema;
 import org.apache.seatunnel.format.text.TextFormatFactory;
+import org.apache.seatunnel.format.text.TextFormatOptions;
 
 import org.apache.pulsar.shade.org.apache.commons.lang3.StringUtils;
 
@@ -79,7 +80,6 @@ import static org.apache.seatunnel.connectors.seatunnel.pulsar.config.SourceProp
 import static org.apache.seatunnel.connectors.seatunnel.pulsar.config.SourceProperties.CURSOR_STARTUP_TIMESTAMP;
 import static org.apache.seatunnel.connectors.seatunnel.pulsar.config.SourceProperties.CURSOR_STOP_MODE;
 import static org.apache.seatunnel.connectors.seatunnel.pulsar.config.SourceProperties.CURSOR_STOP_TIMESTAMP;
-import static org.apache.seatunnel.connectors.seatunnel.pulsar.config.SourceProperties.FIELD_DELIMITER;
 import static org.apache.seatunnel.connectors.seatunnel.pulsar.config.SourceProperties.FORMAT;
 import static org.apache.seatunnel.connectors.seatunnel.pulsar.config.SourceProperties.POLL_BATCH_SIZE;
 import static org.apache.seatunnel.connectors.seatunnel.pulsar.config.SourceProperties.POLL_INTERVAL;
@@ -320,17 +320,18 @@ public class PulsarSource
             }
             switch (format) {
                 case JsonFormatFactory.IDENTIFIER:
-                    deserializationSchema = new JsonDeserializationSchema(false, false, typeInfo);
+                    deserializationSchema =
+                            JsonDeserializationSchema.builder()
+                                    .failOnMissingField(false)
+                                    .ignoreParseErrors(false)
+                                    .rowType(typeInfo)
+                                    .build();
                     break;
                 case TextFormatFactory.IDENTIFIER:
-                    String delimiter = FIELD_DELIMITER.defaultValue();
-                    if (config.hasPath(FIELD_DELIMITER.key())) {
-                        delimiter = config.getString(FIELD_DELIMITER.key());
-                    }
                     deserializationSchema =
                             TextDeserializationSchema.builder()
                                     .seaTunnelRowType(typeInfo)
-                                    .delimiter(delimiter)
+                                    .delimiter(TextFormatOptions.getFieldSeparator(config))
                                     .build();
                     break;
                 case CanalJsonFormatFactory.IDENTIFIER:
@@ -346,10 +347,7 @@ public class PulsarSource
         } else {
             typeInfo = SeaTunnelSchema.buildSimpleTextSchema();
             this.deserializationSchema =
-                    TextDeserializationSchema.builder()
-                            .seaTunnelRowType(typeInfo)
-                            .delimiter(String.valueOf('\002'))
-                            .build();
+                    TextFormatFactory.createDefaultDeserializationFormat(typeInfo);
         }
     }
 
