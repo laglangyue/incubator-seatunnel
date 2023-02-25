@@ -3,14 +3,13 @@ package org.apache.seatunnel.e2e.connector.pulsar;
 import org.apache.seatunnel.e2e.common.TestResource;
 import org.apache.seatunnel.e2e.common.TestSuiteBase;
 
-import com.google.common.collect.Lists;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.pulsar.client.api.Consumer;
 import org.apache.pulsar.client.api.Message;
 import org.apache.pulsar.client.api.Producer;
 import org.apache.pulsar.client.api.PulsarClient;
 import org.apache.pulsar.client.api.PulsarClientException;
 import org.apache.pulsar.client.api.Schema;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -20,6 +19,9 @@ import org.testcontainers.lifecycle.Startables;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.DockerLoggerFactory;
+
+import com.google.common.collect.Lists;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
@@ -37,26 +39,28 @@ public class PulsarIT extends TestSuiteBase implements TestResource {
     private Producer<String> producer;
     private Consumer<String> consumer;
 
-
     @Override
     @BeforeAll
     public void startUp() throws Exception {
-        pulsarContainer = new PulsarContainer(DockerImageName.parse(PULSAR_IMAGE_NAME))
-            .withNetwork(NETWORK)
-            .withNetworkAliases(PULSAR_HOST)
-            .withLogConsumer(new Slf4jLogConsumer(DockerLoggerFactory.getLogger(PULSAR_IMAGE_NAME)));
-        pulsarContainer.setPortBindings(Lists.newArrayList(
-            String.format("%s:%s", PULSAR_BROKER_PORT, PULSAR_BROKER_PORT),
-            String.format("%s:%s", PULSAR_BROKER_HTTP_PORT, PULSAR_BROKER_HTTP_PORT)
-        ));
+        pulsarContainer =
+                new PulsarContainer(DockerImageName.parse(PULSAR_IMAGE_NAME))
+                        .withNetwork(NETWORK)
+                        .withNetworkAliases(PULSAR_HOST)
+                        .withLogConsumer(
+                                new Slf4jLogConsumer(
+                                        DockerLoggerFactory.getLogger(PULSAR_IMAGE_NAME)));
+        pulsarContainer.setPortBindings(
+                Lists.newArrayList(
+                        String.format("%s:%s", PULSAR_BROKER_PORT, PULSAR_BROKER_PORT),
+                        String.format("%s:%s", PULSAR_BROKER_HTTP_PORT, PULSAR_BROKER_HTTP_PORT)));
 
         Startables.deepStart(Stream.of(pulsarContainer)).join();
         Awaitility.given()
-            .ignoreExceptions()
-            .atLeast(100, TimeUnit.MILLISECONDS)
-            .pollInterval(500, TimeUnit.MILLISECONDS)
-            .atMost(180, TimeUnit.SECONDS)
-            .untilAsserted(this::initTopic);
+                .ignoreExceptions()
+                .atLeast(100, TimeUnit.MILLISECONDS)
+                .pollInterval(500, TimeUnit.MILLISECONDS)
+                .atMost(180, TimeUnit.SECONDS)
+                .untilAsserted(this::initTopic);
     }
 
     @Override
@@ -78,17 +82,14 @@ public class PulsarIT extends TestSuiteBase implements TestResource {
 
     private void initTopic() throws PulsarClientException {
 
-        client = PulsarClient.builder()
-            .serviceUrl(pulsarContainer.getPulsarBrokerUrl())
-            .build();
+        client = PulsarClient.builder().serviceUrl(pulsarContainer.getPulsarBrokerUrl()).build();
 
-        producer = client.newProducer(Schema.STRING)
-            .topic(TOPIC)
-            .create();
+        producer = client.newProducer(Schema.STRING).topic(TOPIC).create();
 
-        consumer = client.newConsumer(Schema.STRING)
-            .topic(TOPIC)
-            .subscriptionName(CONSUMER_SUBSCRIPTION)
-            .subscribe();
+        consumer =
+                client.newConsumer(Schema.STRING)
+                        .topic(TOPIC)
+                        .subscriptionName(CONSUMER_SUBSCRIPTION)
+                        .subscribe();
     }
 }

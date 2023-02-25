@@ -17,7 +17,7 @@ Source connector for Apache Pulsar.
 
 ## Options
 
-| name                     | type    | required | default value |
+|           name           |  type   | required | default value |
 |--------------------------|---------|----------|---------------|
 | topic                    | String  | No       | -             |
 | topic-pattern            | String  | No       | -             |

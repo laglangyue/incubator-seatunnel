@@ -1,0 +1,9 @@
+configs:
+  zkServers: ""
+  batchSize: "5120"
+  destination: "test"
+  username: ""
+  password: ""
+  cluster: false
+  singleHostname: "pulsar-canal-server"
+  singlePort: "11111"
