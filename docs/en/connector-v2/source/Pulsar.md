@@ -17,7 +17,7 @@ Source connector for Apache Pulsar.
 
 ## Options
 
-| name                     | type    | required | default value |
+|           name           |  type   | required | default value |
 |--------------------------|---------|----------|---------------|
 | topic                    | String  | No       | -             |
 | topic-pattern            | String  | No       | -             |
@@ -74,7 +74,7 @@ For example, `localhost`: `pulsar://localhost:6650,localhost:6651`.
 
 The Pulsar service HTTP URL for the admin endpoint.
 
-For example, `http://my-broker.example.com:8080`, or `https://my-broker.example.com:8443` for TLS.
+For example, `http://localhost:8080`, or `https://localhost:8443` for TLS.
 
 ### auth.plugin-class [String]
 
@@ -126,11 +126,18 @@ Stop from the specified epoch timestamp (in milliseconds).
 
 **Note, This option is required when the "cursor.stop.mode" option used `'TIMESTAMP'`.**
 
-### schema [Config]
+### schema
 
-#### fields [Config]
+The structure of the data, including field names and field types.
 
-the schema fields of upstream data.
+## format
+
+Data format. The default format is json. Optional text format. The default field separator is ", ".
+If you customize the delimiter, add the "field_delimiter" option.
+
+## field_delimiter
+
+Customize the field delimiter for data format.
 
 ### common options
 
@@ -143,7 +150,7 @@ source {
   Pulsar {
   	topic = "example"
   	subscription.name = "seatunnel"
-    client.service-url = "localhost:pulsar://localhost:6650"
+    client.service-url = "pulsar://localhost:6650"
     admin.service-url = "http://my-broker.example.com:8080"
     result_table_name = "test"
   }

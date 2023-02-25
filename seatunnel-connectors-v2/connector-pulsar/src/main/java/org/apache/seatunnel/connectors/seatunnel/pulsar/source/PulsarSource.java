@@ -28,14 +28,12 @@ import org.apache.seatunnel.api.source.SourceReader;
 import org.apache.seatunnel.api.source.SourceSplitEnumerator;
 import org.apache.seatunnel.api.source.SupportParallelism;
 import org.apache.seatunnel.api.table.catalog.CatalogTableUtil;
-import org.apache.seatunnel.api.table.type.SeaTunnelDataType;
 import org.apache.seatunnel.api.table.type.SeaTunnelRow;
 import org.apache.seatunnel.api.table.type.SeaTunnelRowType;
 import org.apache.seatunnel.common.config.CheckConfigUtil;
 import org.apache.seatunnel.common.config.CheckResult;
 import org.apache.seatunnel.common.constants.PluginType;
 import org.apache.seatunnel.common.exception.CommonErrorCode;
-import org.apache.seatunnel.connectors.seatunnel.common.schema.SeaTunnelSchema;
 import org.apache.seatunnel.connectors.seatunnel.pulsar.config.PulsarAdminConfig;
 import org.apache.seatunnel.connectors.seatunnel.pulsar.config.PulsarClientConfig;
 import org.apache.seatunnel.connectors.seatunnel.pulsar.config.PulsarConfigUtil;
@@ -51,6 +49,7 @@ import org.apache.seatunnel.connectors.seatunnel.pulsar.source.enumerator.cursor
 import org.apache.seatunnel.connectors.seatunnel.pulsar.source.enumerator.discoverer.PulsarDiscoverer;
 import org.apache.seatunnel.connectors.seatunnel.pulsar.source.enumerator.discoverer.TopicListDiscoverer;
 import org.apache.seatunnel.connectors.seatunnel.pulsar.source.enumerator.discoverer.TopicPatternDiscoverer;
+import org.apache.seatunnel.connectors.seatunnel.pulsar.source.format.PulsarCanalDecorator;
 import org.apache.seatunnel.connectors.seatunnel.pulsar.source.reader.PulsarSourceReader;
 import org.apache.seatunnel.connectors.seatunnel.pulsar.source.split.PulsarPartitionSplit;
 import org.apache.seatunnel.format.json.JsonDeserializationSchema;
@@ -306,14 +305,8 @@ public class PulsarSource
     }
 
     private void setDeserialization(Config config) {
-        String format = config.getString("format");
-        // TODO: format SPI
-        SeaTunnelRowType rowType = CatalogTableUtil.buildWithConfig(config).getSeaTunnelRowType();
-        deserialization =
-                (DeserializationSchema<T>) new JsonDeserializationSchema(false, false, rowType);
         if (config.hasPath(SCHEMA.key())) {
-            Config schema = config.getConfig(SCHEMA.key());
-            typeInfo = SeaTunnelSchema.buildWithConfig(schema).getSeaTunnelRowType();
+            typeInfo = CatalogTableUtil.buildWithConfig(config).getSeaTunnelRowType();
             String format = FORMAT.defaultValue();
             if (config.hasPath(FORMAT.key())) {
                 format = config.getString(FORMAT.key());
@@ -336,16 +329,17 @@ public class PulsarSource
                     break;
                 case CanalJsonFormatFactory.IDENTIFIER:
                     deserializationSchema =
-                            CanalJsonDeserializationSchema.builder(typeInfo)
-                                    .setIgnoreParseErrors(true)
-                                    .build();
+                            new PulsarCanalDecorator(
+                                    CanalJsonDeserializationSchema.builder(typeInfo)
+                                            .setIgnoreParseErrors(true)
+                                            .build());
                     break;
                 default:
                     throw new SeaTunnelJsonFormatException(
                             CommonErrorCode.UNSUPPORTED_DATA_TYPE, "Unsupported format: " + format);
             }
         } else {
-            typeInfo = SeaTunnelSchema.buildSimpleTextSchema();
+            typeInfo = CatalogTableUtil.buildSimpleTextSchema();
             this.deserializationSchema =
                     TextFormatFactory.createDefaultDeserializationFormat(typeInfo);
         }
@@ -405,6 +399,6 @@ public class PulsarSource
                 startCursor,
                 stopCursor,
                 consumerConfig.getSubscriptionName(),
-                checkpointState.assignedPartitions());
+                checkpointState.getAssignedPartitions());
     }
 }
