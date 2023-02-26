@@ -82,7 +82,8 @@ public class PulsarIT extends TestSuiteBase implements TestResource {
 
     private void initTopic() throws PulsarClientException {
 
-        client = PulsarClient.builder().serviceUrl(pulsarContainer.getPulsarBrokerUrl()).build();
+        client = PulsarClient.builder()
+            .serviceUrl(pulsarContainer.getPulsarBrokerUrl()).build();
 
         producer = client.newProducer(Schema.STRING).topic(TOPIC).create();
 
