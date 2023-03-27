@@ -45,6 +45,16 @@ import org.testcontainers.utility.DockerLoggerFactory;
 import org.testcontainers.utility.MountableFile;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
@@ -161,7 +171,7 @@ public class CanalToPulsarIT extends TestSuiteBase implements TestResource {
                 PULSAR_CONTAINER.execInContainer(
                         "chmod", "777", "/pulsar/start_canal_connector.sh");
         Assertions.assertEquals(chmod.getExitCode(), 0);
-        // how to exec docker command backend ?
+        // exec docker command backend
         Container.ExecResult execResult =
                 PULSAR_CONTAINER.execInContainer(
                         "/bin/sh",
@@ -182,7 +192,6 @@ public class CanalToPulsarIT extends TestSuiteBase implements TestResource {
                 }
             } catch (Exception ignore) {
             }
-
             Thread.sleep(1000);
         }
         pulsarAdmin.close();
@@ -222,5 +231,49 @@ public class CanalToPulsarIT extends TestSuiteBase implements TestResource {
     void testCanalFormatMessages(TestContainer container) throws IOException, InterruptedException {
         Container.ExecResult execResult = container.executeJob("/cdc_canal_pulsar_to_console.conf");
         Assertions.assertEquals(0, execResult.getExitCode(), execResult.getStderr());
+    }
+
+    @TestTemplate
+    void testCanalFormatMessagesToMysql(TestContainer container)
+            throws IOException, InterruptedException, SQLException {
+        Container.ExecResult execResult = container.executeJob("/cdc_canal_pulsar_to_mysql.conf");
+        Assertions.assertEquals(0, execResult.getExitCode(), execResult.getStderr());
+
+        Set<List<Object>> actual = new HashSet<>();
+        try (Connection connection =
+                DriverManager.getConnection(
+                        MYSQL_CONTAINER.getJdbcUrl(),
+                        MYSQL_CONTAINER.getUsername(),
+                        MYSQL_CONTAINER.getPassword())) {
+            try (Statement statement = connection.createStatement()) {
+                ResultSet resultSet = statement.executeQuery("select * from products_assert");
+                while (resultSet.next()) {
+                    List<Object> row =
+                            Arrays.asList(
+                                    resultSet.getInt("id"),
+                                    resultSet.getString("name"),
+                                    resultSet.getString("description"),
+                                    resultSet.getString("weight"));
+                    actual.add(row);
+                }
+            }
+        }
+        Set<List<Object>> expected =
+                Stream.<List<Object>>of(
+                                Arrays.asList(102, "car battery", "12V car battery", "8.1"),
+                                Arrays.asList(
+                                        103,
+                                        "12-pack drill bits",
+                                        "12-pack of drill bits with sizes ranging from #40 to #3",
+                                        "0.8"),
+                                Arrays.asList(104, "hammer", "12oz carpenter's hammer", "0.75"),
+                                Arrays.asList(105, "hammer", "14oz carpenter's hammer", "0.875"),
+                                Arrays.asList(106, "hammer", "16oz carpenter's hammer", "1.0"),
+                                Arrays.asList(
+                                        108, "jacket", "water resistent black wind breaker", "0.1"),
+                                Arrays.asList(101, "scooter", "Small 2-wheel scooter", "4.56"),
+                                Arrays.asList(107, "rocks", "box of assorted rocks", "7.88"))
+                        .collect(Collectors.toSet());
+        Assertions.assertIterableEquals(expected, actual);
     }
 }
