@@ -219,7 +219,7 @@ public class CanalToPulsarIT extends TestSuiteBase implements TestResource {
     }
 
     @TestTemplate
-    void testContainer(TestContainer container) throws IOException, InterruptedException {
+    void testCanalFormatMessages(TestContainer container) throws IOException, InterruptedException {
         Container.ExecResult execResult = container.executeJob("/cdc_canal_pulsar_to_console.conf");
         Assertions.assertEquals(0, execResult.getExitCode(), execResult.getStderr());
     }
