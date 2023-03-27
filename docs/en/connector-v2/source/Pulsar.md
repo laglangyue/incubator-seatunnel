@@ -163,3 +163,5 @@ source {
 
 - Add Pulsar Source Connector
 
+### next version
+- [Feature] Add Pulsar canal-format and e2e ([4111](https://github.com/apache/incubator-seatunnel/pull/4111))
