@@ -44,6 +44,13 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
+/**
+ * spark 2.4 接口实现
+ * DataSourceV2 v2数据源空接口，可以移除，ReadSupport 继承该接口
+ * ReadSupport 支持读
+ * MicroBatchReadSupport streamingContext的读
+ * DataSourceRegister 数据源注册
+ */
 public class SeaTunnelSourceSupport
         implements DataSourceV2, ReadSupport, MicroBatchReadSupport, DataSourceRegister {
     private static final Logger LOG = LoggerFactory.getLogger(SeaTunnelSourceSupport.class);
@@ -52,18 +59,22 @@ public class SeaTunnelSourceSupport
 
     @Override
     public String shortName() {
+        // 把这个数据源 注册到spark 中
         return SEA_TUNNEL_SOURCE_NAME;
     }
 
     @Override
     public DataSourceReader createReader(StructType rowType, DataSourceOptions options) {
+        // 重载接口, 用于可以通过rowType去指定schema
         return createReader(options);
     }
 
     @Override
     public DataSourceReader createReader(DataSourceOptions options) {
+        // 从Options 获取读取SeaTunnelSource 具体的实现类(真正读取数据的对象)
         SeaTunnelSource<SeaTunnelRow, ?, ?> seaTunnelSource = getSeaTunnelSource(options);
         int parallelism = options.getInt(CommonOptions.PARALLELISM.key(), 1);
+        // 用spark的 批reader包装 SeaTunnelSource,以便spark能够识别SeaTunnelSource
         return new BatchSourceReader(seaTunnelSource, parallelism);
     }
 

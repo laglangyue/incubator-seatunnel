@@ -31,6 +31,9 @@ import org.apache.spark.sql.types.StructType;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * spark 批任务的包装类
+ */
 public class BatchSourceReader implements DataSourceReader {
 
     protected final SeaTunnelSource<SeaTunnelRow, ?, ?> source;
@@ -43,11 +46,13 @@ public class BatchSourceReader implements DataSourceReader {
 
     @Override
     public StructType readSchema() {
+        // 从 SeaTunnelSource 得到schema 提供给Spark, 所以对于spark来说,schema是固定的, 在构造方法里面去直接反序列化出schema更为合适
         return (StructType) TypeConverterUtils.convert(source.getProducedType());
     }
 
     @Override
     public List<InputPartition<InternalRow>> planInputPartitions() {
+        // 并行读取,这里等于spark分区数, 生成了多个BatchPartition
         List<InputPartition<InternalRow>> virtualPartitions;
         if (source instanceof SupportCoordinate) {
             virtualPartitions = new ArrayList<>(1);

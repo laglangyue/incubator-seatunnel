@@ -40,6 +40,9 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import static org.apache.seatunnel.translation.source.CoordinatedSource.SLEEP_TIME_INTERVAL;
 
+/**
+ * 并行读取
+ */
 public class ParallelSource<T, SplitT extends SourceSplit, StateT extends Serializable>
         implements BaseSourceFunction<T> {
     private static final Logger LOG = LoggerFactory.getLogger(ParallelSource.class);

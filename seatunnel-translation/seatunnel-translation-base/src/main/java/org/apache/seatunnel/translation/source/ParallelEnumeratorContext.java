@@ -27,6 +27,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * 并行读取枚举器
+ */
 public class ParallelEnumeratorContext<SplitT extends SourceSplit>
         implements SourceSplitEnumerator.Context<SplitT> {
 
