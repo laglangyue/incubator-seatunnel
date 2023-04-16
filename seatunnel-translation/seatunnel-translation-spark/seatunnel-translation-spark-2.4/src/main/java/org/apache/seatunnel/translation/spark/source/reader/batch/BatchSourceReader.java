@@ -52,7 +52,7 @@ public class BatchSourceReader implements DataSourceReader {
 
     @Override
     public List<InputPartition<InternalRow>> planInputPartitions() {
-        // 并行读取,这里等于spark分区数, 生成了多个BatchPartition
+        // 并行读取, 生成了多个BatchPartition
         List<InputPartition<InternalRow>> virtualPartitions;
         if (source instanceof SupportCoordinate) {
             virtualPartitions = new ArrayList<>(1);
