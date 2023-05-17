@@ -42,6 +42,9 @@ import java.util.Map;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 这个类只处理任务状态,真正的读取在父类
+ */
 public class ParallelMicroBatchPartitionReader extends ParallelBatchPartitionReader {
     protected static final Integer CHECKPOINT_SLEEP_INTERVAL = 10;
     protected static final Integer CHECKPOINT_RETRIES = 3;
@@ -91,6 +94,7 @@ public class ParallelMicroBatchPartitionReader extends ParallelBatchPartitionRea
 
     protected FileSystem getFileSystem()
             throws URISyntaxException, IOException, InterruptedException {
+        // 状态读取
         Configuration configuration = new Configuration();
         configuration.set("fs.defaultFS", hdfsRoot);
         if (StringUtils.isNotBlank(hdfsUser)) {

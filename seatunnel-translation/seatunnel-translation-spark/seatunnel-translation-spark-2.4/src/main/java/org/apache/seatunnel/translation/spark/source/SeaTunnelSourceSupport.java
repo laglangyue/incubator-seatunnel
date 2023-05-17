@@ -86,7 +86,7 @@ public class SeaTunnelSourceSupport
         // 创建微批 读取器，spark streaming，即将被删除
         SeaTunnelSource<SeaTunnelRow, ?, ?> seaTunnelSource = getSeaTunnelSource(options);
         Integer parallelism = options.getInt(CommonOptions.PARALLELISM.key(), 1);
-        // checkpoint
+        // checkpoint 配置
         Integer checkpointInterval =
                 options.getInt(
                         EnvCommonOptions.CHECKPOINT_INTERVAL.key(), CHECKPOINT_INTERVAL_DEFAULT);
