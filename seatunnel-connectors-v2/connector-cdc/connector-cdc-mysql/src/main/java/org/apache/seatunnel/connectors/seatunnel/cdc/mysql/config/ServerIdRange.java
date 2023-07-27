@@ -19,9 +19,10 @@ package org.apache.seatunnel.connectors.seatunnel.cdc.mysql.config;
 
 import org.apache.seatunnel.connectors.cdc.base.option.JdbcSourceOptions;
 
+import org.apache.seatunnel.shade.com.google.common.base.Preconditions;
+
 import java.io.Serializable;
 
-import static com.google.common.base.Preconditions.checkArgument;
 
 /**
  * This class defines a range of server id. The boundaries of the range are inclusive.
@@ -51,7 +52,7 @@ public class ServerIdRange implements Serializable {
     }
 
     public long getServerId(int subTaskId) {
-        checkArgument(subTaskId >= 0, "Subtask ID %s shouldn't be a negative number.", subTaskId);
+        Preconditions.checkArgument(subTaskId >= 0, "Subtask ID %s shouldn't be a negative number.", subTaskId);
         if ((long) subTaskId > getNumberOfServerIds()) {
             throw new IllegalArgumentException(
                     String.format(

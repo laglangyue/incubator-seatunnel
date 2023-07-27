@@ -17,6 +17,8 @@
 
 package org.apache.seatunnel.connectors.seatunnel.iceberg.source;
 
+import static org.apache.seatunnel.shade.com.google.common.base.Preconditions.checkArgument;
+
 import org.apache.seatunnel.shade.com.typesafe.config.Config;
 
 import org.apache.seatunnel.api.common.JobContext;
@@ -53,7 +55,7 @@ import lombok.SneakyThrows;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkArgument;
+
 
 @AutoService(SeaTunnelSource.class)
 public class IcebergSource

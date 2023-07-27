@@ -49,6 +49,8 @@ import java.util.TreeMap;
 import static org.apache.seatunnel.connectors.seatunnel.rabbitmq.exception.RabbitmqConnectorErrorCode.MESSAGE_ACK_FAILED;
 import static org.apache.seatunnel.connectors.seatunnel.rabbitmq.exception.RabbitmqConnectorErrorCode.MESSAGE_ACK_REJECTED;
 
+import org.apache.seatunnel.shade.com.google.common.base.Preconditions;
+
 @Slf4j
 public class RabbitmqSourceReader<T> implements SourceReader<T, RabbitmqSplit> {
     protected final Handover<Delivery> handover;
@@ -211,7 +213,7 @@ public class RabbitmqSourceReader<T> implements SourceReader<T, RabbitmqSplit> {
     public boolean verifyMessageIdentifier(String correlationId, long deliveryTag) {
         if (!autoAck) {
             if (usesCorrelationId) {
-                com.google.common.base.Preconditions.checkNotNull(
+                Preconditions.checkNotNull(
                         correlationId,
                         "RabbitMQ source was instantiated with usesCorrelationId set to "
                                 + "true yet we couldn't extract the correlation id from it!");
