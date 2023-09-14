@@ -107,6 +107,7 @@ public class ParallelMicroBatchPartitionReader extends ParallelBatchPartitionRea
     protected ReaderState snapshotState() {
         Map<Integer, List<byte[]>> bytes;
         try {
+            // 枚举器的状态
             bytes = internalSource.snapshotState(checkpointId);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -115,6 +116,7 @@ public class ParallelMicroBatchPartitionReader extends ParallelBatchPartitionRea
     }
 
     public void prepareCheckpoint() {
+        // 定时任务去 virtualCheckpoint
         executor =
                 ThreadPoolExecutorFactory.createScheduledThreadPoolExecutor(
                         1, String.format("parallel-reader-checkpoint-executor-%s", subtaskId));
@@ -123,6 +125,7 @@ public class ParallelMicroBatchPartitionReader extends ParallelBatchPartitionRea
 
     public void virtualCheckpoint() {
         try {
+            // checkPoint
             int checkpointRetries = Math.max(1, CHECKPOINT_RETRIES);
             do {
                 checkpointRetries--;
