@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-public class PostgresDialectFactoryTest {
+public class GaussDBDialectFactoryTest {
 
     @Test
     public void testPostgresDialectCreate() {
