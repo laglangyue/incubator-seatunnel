@@ -52,13 +52,13 @@ public class JdbcGaussDBIT extends AbstractJdbcIT {
 
   private static final int PORT = 5432;
 
-  private static final int LOCAL_PORT = 54320;
+  private static final int LOCAL_PORT = 15432;
 
   public static final List<String> CONFIG_FILE = Lists.newArrayList();
 
 
   private static final String CREATE_SOURCE =
-      "CREATE TABLE IF NOT EXISTS" + SOURCE_TABLE + "(\n"
+      "CREATE TABLE IF NOT EXISTS %s (\n"
           + "  gid SERIAL PRIMARY KEY,\n"
           + "  text_col TEXT,\n"
           + "  varchar_col VARCHAR(255),\n"
@@ -91,41 +91,6 @@ public class JdbcGaussDBIT extends AbstractJdbcIT {
           + "  jsonb_col jsonb NOT NULL,\n"
           + "  xml_col xml NOT NULL\n"
           + ")";
-
-  private static final String CREATE_SINK =
-      "CREATE TABLE IF NOT EXISTS " + SINK_TABLE + " (\n"
-          + "    gid SERIAL PRIMARY KEY,\n"
-          + "    text_col TEXT,\n"
-          + "    varchar_col VARCHAR(255),\n"
-          + "    char_col CHAR(10),\n"
-          + "    boolean_col bool,\n"
-          + "    smallint_col int2,\n"
-          + "    integer_col int4,\n"
-          + "    bigint_col BIGINT,\n"
-          + "    decimal_col DECIMAL(10, 2),\n"
-          + "    numeric_col NUMERIC(8, 4),\n"
-          + "    real_col float4,\n"
-          + "    double_precision_col float8,\n"
-          + "    smallserial_col SMALLSERIAL,\n"
-          + "    serial_col SERIAL,\n"
-          + "    bigserial_col BIGSERIAL,\n"
-          + "    date_col DATE,\n"
-          + "    timestamp_col TIMESTAMP,\n"
-          + "    bpchar_col BPCHAR(10),\n"
-          + "    age int4 NOT NULL,\n"
-          + "    name varchar(255) NOT NULL,\n"
-          + "    point varchar(2000) NULL,\n"
-          + "    linestring varchar(2000) NULL,\n"
-          + "    polygon_colums varchar(2000) NULL,\n"
-          + "    multipoint varchar(2000) NULL,\n"
-          + "    multilinestring varchar(2000) NULL,\n"
-          + "    multipolygon varchar(2000) NULL,\n"
-          + "    geometrycollection varchar(2000) NULL,\n"
-          + "    geog varchar(2000) NULL,\n"
-          + "    json_col json NOT NULL \n,"
-          + "    jsonb_col jsonb NOT NULL,\n"
-          + "    xml_col xml NOT NULL\n"
-          + "  )";
 
   @TestContainerExtension
   private final ContainerExtendedFactory extendedFactory =
@@ -190,9 +155,9 @@ public class JdbcGaussDBIT extends AbstractJdbcIT {
   @Override
   GenericContainer<?> initContainer() {
     // docker run --name opengauss --privileged=true -d -e GS_PASSWORD=openGauss@123 -p 15434:5432 opengauss/opengauss:5.0.0
-    container = new GenericContainer<>()
+    container = new GenericContainer<>(GAUSSDB_IMAGE)
         .withNetwork(TestSuiteBase.NETWORK)
-        .withNetworkAliases("gaussdb")
+        .withNetworkAliases(CONTAINER_HOST)
         .withPrivilegedMode(true)
         .withEnv("GS_PASSWORD", PASSWORD)
         .withExposedPorts(5432)
